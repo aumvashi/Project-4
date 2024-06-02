@@ -1,5 +1,12 @@
 const express = require("express");
 
+const {
+  getAllUser,
+  getSingleUserById,
+  deleteUser,
+  updateUserData,
+} = require("../controllers/user-controller");
+
 const { users } = require("../data/users.json");
 
 const router = express.Router();
@@ -14,12 +21,7 @@ const { UserModel, BookModel } = require("../models/index");
     Parameters: None
 */
 
-router.get("/", (req, res) => {
-  res.status(200).json({
-    success: true,
-    data: users,
-  });
-});
+router.get("/", getAllUser);
 
 /*
     Route: /:id
@@ -29,21 +31,7 @@ router.get("/", (req, res) => {
     Parameters: id
 */
 
-router.get("/:id", (req, res) => {
-  const { id } = req.params;
-  const user = users.find((each) => each.id === id);
-  if (!user) {
-    res.status(404).json({
-      success: false,
-      message: "User Not Found :(",
-    });
-  }
-  res.status(200).json({
-    success: true,
-    message: "User Found :)",
-    data: user,
-  });
-});
+router.get("/:id", getSingleUserById);
 
 /*
     Route: /
@@ -87,32 +75,7 @@ router.post("/", (req, res) => {
     Parameters: ID
 */
 
-router.put("/:id", (req, res) => {
-  const { id } = req.params;
-  const { data } = req.body;
-
-  const user = users.find((each) => each.id === id);
-  if (!user) {
-    return res.status(404).json({
-      success: false,
-      message: "User Doesn't Exists...",
-    });
-  }
-  const updateUserData = users.map((each) => {
-    if (each.id === id) {
-      return {
-        ...each,
-        ...data,
-      };
-    }
-    return each;
-  });
-  return res.status(200).json({
-    success: true,
-    message: "User Updated...",
-    data: updateUserData,
-  });
-});
+router.put("/:id", updateUserData);
 
 /*
     Route: /:id
@@ -122,24 +85,7 @@ router.put("/:id", (req, res) => {
     Parameters: ID
 */
 
-router.delete("/:id", (req, res) => {
-  const { id } = req.params;
-  const user = users.find((each) => each.id === id);
-  if (!user) {
-    res.status(404).json({
-      success: false,
-      message: "User Doesn't Exist...",
-    });
-  }
-  const index = users.indexOf(user);
-  users.splice(index, 1);
-
-  return res.status(200).json({
-    success: true,
-    message: "Deleted User...",
-    data: users,
-  });
-});
+router.delete("/:id", deleteUser);
 
 /*
     Route: /subscription-details/:id
